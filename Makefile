@@ -10,9 +10,15 @@ PHP      = $(PHP_CONT) php
 COMPOSER = $(PHP_CONT) composer
 SYMFONY  = $(PHP) bin/console
 
+# Symfony commands
+MIGRATION_COMMANDS = generate execute status
+
+# Tools
+PHP_CS_FIXER =
+
 # Misc
 .DEFAULT_GOAL = help
-.PHONY        : help build up start down logs sh composer vendor sf cc test
+.PHONY        : help build up start down logs sh composer vendor sf cc test migrations-% trust-tls cs-fix
 
 ## See https://www.strangebuzz.com/en/snippets/the-perfect-makefile-for-symfony for more commands
 
@@ -66,6 +72,31 @@ sf: ## List all Symfony commands or pass the parameter "c=" to run a given comma
 cc: c=c:c ## Clear the cache
 cc: sf
 
+entity: ## Create a new entity
+	@$(SYMFONY) make:entity
+
+## —— Database 🗂️️ —————————————————————————————————————————————————————————————
+database: ## Create the local dev database
+		@make database-create
+		@make database-migrations-execute
+		@make fixtures-load
+
+database-create: ## Create the local dev database
+		$(SYMFONY) doctrine:database:drop --if-exists --force
+		$(SYMFONY) doctrine:database:create
+
+fixtures-load: ## Load fixtures
+		$(SYMFONY) doctrine:fixtures:load -n --group=dev -e dev
+
+migrations-generate: ## Generate doctrine migrations
+		$(SYMFONY) doctrine:migrations:generate
+
+migrations-execute: ## Execute doctrine migrations
+		$(SYMFONY) doctrine:migrations:migrate --no-interaction
+
+migrations-status: ## View migration status
+		$(SYMFONY) doctrine:migrations:status
+
 ## —— Utils 🔌 ————————————————————————————————————————————————————————————————————————
 trust-tls: ## Trust the TLS certificates
 	@$(DOCKER) cp $(shell $(DOCKER_COMP) ps -q php):/data/caddy/pki/authorities/local/root.crt /tmp/root.crt && sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain /tmp/root.crt
@@ -74,4 +105,10 @@ trust-tls: ## Trust the TLS certificates
 cs-fix: ## Run php-cs-fixer, pass the parameter "c=" to run a given command, example: make cs-fix c='fix /path/to/project --rules=@PSR12', default is "fix src"
 	@$(eval c ?= fix src/)
 	@$(DOCKER_COMP) exec php vendor/bin/php-cs-fixer $(c)
+
+grump-run: ## Run GrumPHP
+	@$(PHP_CONT) ./vendor/bin/grumphp run
+
+grump-init: ## Initialize GrumPHP
+	@$(PHP_CONT) ./vendor/bin/grumphp git:init
 

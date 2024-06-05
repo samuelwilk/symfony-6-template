@@ -1,7 +1,9 @@
 #syntax=docker/dockerfile:1.4
 
+ARG PHP_VERSION
+
 # Versions
-FROM dunglas/frankenphp:1-php8.3 AS frankenphp_upstream
+FROM dunglas/frankenphp:1-php${PHP_VERSION} AS frankenphp_upstream
 
 # The different stages of this Dockerfile are meant to be built into separate images
 # https://docs.docker.com/develop/develop-images/multistage-build/#stop-at-a-specific-build-stage
@@ -39,7 +41,12 @@ ENV COMPOSER_ALLOW_SUPERUSER=1
 
 ###> recipes ###
 ###> doctrine/doctrine-bundle ###
-RUN install-php-extensions pdo_pgsql
+# Uncomment for PostgreSQL
+#RUN install-php-extensions pdo_pgsql
+# Uncomment for MySQL or MariaDB
+RUN install-php-extensions pdo_mysql
+# Uncomment for MSSQL
+#RUN install-php-extensions pdo_sqlsrv
 ###< doctrine/doctrine-bundle ###
 ###< recipes ###
 

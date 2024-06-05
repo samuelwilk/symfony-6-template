@@ -1,0 +1,74 @@
+grumphp:
+    git_hook_variables:
+        EXEC_GRUMPHP_COMMAND: ['docker-compose', 'run', '-T', '--rm', '--no-deps', 'php']
+    tasks:
+        composer:
+            file: ./composer.json
+            no_check_all: false
+            no_check_lock: false
+            no_check_publish: false
+            no_local_repository: false
+            with_dependencies: false
+            strict: false
+        doctrine_schema_validate:
+            skip_mapping: false
+            skip_sync: false
+            triggered_by: [ 'php', 'xml', 'yml' ]
+        git_commit_message:
+            allow_empty_message: false
+            enforce_capitalized_subject: false
+            enforce_no_subject_punctuations: false
+            enforce_no_subject_trailing_period: true
+            enforce_single_lined_subject: true
+            type_scope_conventions: [ 'build', 'ci', 'chore', 'docs', 'feat', 'fix', 'perf', 'refactor', 'revert', 'style', 'test' ]
+            max_body_width: 72
+            max_subject_width: 60
+            case_insensitive: true
+            multiline: true
+            additional_modifiers: ''
+        git_blacklist:
+            keywords:
+                - "die\\("
+                - "var_dump\\("
+                - "exit;"
+            triggered_by: [ 'php' ]
+            regexp_type: E
+            match_word: false
+        twigcs:
+            path: '.'
+            severity: 'warning'
+            display: 'all'
+            ruleset: 'FriendsOfTwig\Twigcs\Ruleset\Official'
+            triggered_by: [ 'twig' ]
+            exclude: ['vendor/']
+        phpcsfixer:
+            config: .php-cs-fixer.dist.php
+            rules: [ ]
+            config_contains_finder: true
+            verbose: true
+            diff: false
+            triggered_by: [ 'php' ]
+        phpstan:
+            autoload_file: ~
+            configuration: ~
+            level: null
+            force_patterns: [ ]
+            ignore_patterns: [ ]
+            triggered_by: [ 'php' ]
+            memory_limit: "-1"
+            use_grumphp_paths: true
+        phpversion:
+            project: '8.2'
+        securitychecker_symfony:
+            lockfile: ./composer.lock
+            format: ~
+            run_always: false
+services:
+    App\Tasks\DoctrineSchemaValidateTask:
+        class: App\Tasks\DoctrineSchemaValidateTask
+        arguments:
+            - "@process_builder"
+            - "@formatter.raw_process"
+        tags:
+            - { name: grumphp.task, task: doctrine_schema_validate }
+        
