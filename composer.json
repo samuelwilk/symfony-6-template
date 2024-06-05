@@ -39,8 +39,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "App\\Tests\\": "tests/",
-            "Integrations\\GrumPhpDoctrineTask\\": "integrations/GrumPhpDoctrineTask/"
+            "App\\Tests\\": "tests/"
         }
     },
     "replace": {

@@ -13,12 +13,9 @@ SYMFONY  = $(PHP) bin/console
 # Symfony commands
 MIGRATION_COMMANDS = generate execute status
 
-# Tools
-PHP_CS_FIXER =
-
 # Misc
 .DEFAULT_GOAL = help
-.PHONY        : help build up start down logs sh composer vendor sf cc test migrations-% trust-tls cs-fix
+.PHONY        : help build up start down logs sh composer vendor sf cc test trust-tls cs-fix
 
 ## See https://www.strangebuzz.com/en/snippets/the-perfect-makefile-for-symfony for more commands
 
