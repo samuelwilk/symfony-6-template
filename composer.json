@@ -20,6 +20,7 @@
         "symfony/framework-bundle": "6.4.*",
         "symfony/mercure-bundle": "^0.3.9",
         "symfony/runtime": "6.4.*",
+        "symfony/security-bundle": "6.4.*",
         "symfony/twig-bundle": "6.4.*",
         "symfony/yaml": "6.4.*"
     },
@@ -75,6 +76,8 @@
         }
     },
     "require-dev": {
+        "dama/doctrine-test-bundle": "^8.2",
+        "doctrine/doctrine-fixtures-bundle": "^3.6",
         "friendsofphp/php-cs-fixer": "^3.58",
         "friendsoftwig/twigcs": ">=4",
         "phpro/grumphp": "^2.5",
@@ -83,6 +86,8 @@
         "symfony/browser-kit": "6.4.*",
         "symfony/css-selector": "6.4.*",
         "symfony/maker-bundle": "^1.59",
-        "symfony/phpunit-bridge": "^7.1"
+        "symfony/phpunit-bridge": "^7.1",
+        "symfony/stopwatch": "6.4.*",
+        "symfony/web-profiler-bundle": "6.4.*"
     }
 }

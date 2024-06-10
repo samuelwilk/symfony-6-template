@@ -10,9 +10,6 @@ PHP      = $(PHP_CONT) php
 COMPOSER = $(PHP_CONT) composer
 SYMFONY  = $(PHP) bin/console
 
-# Symfony commands
-MIGRATION_COMMANDS = generate execute status
-
 # Misc
 .DEFAULT_GOAL = help
 .PHONY        : help build up start down logs sh composer vendor sf cc test trust-tls cs-fix
@@ -49,7 +46,7 @@ bash: ## Connect to the FrankenPHP container via bash so up and down arrows go t
 
 test: ## Start tests with phpunit, pass the parameter "c=" to add options to phpunit, example: make test c="--group e2e --stop-on-failure"
 	@$(eval c ?=)
-	@$(DOCKER_COMP) exec -e APP_ENV=test php bin/phpunit $(c)
+	@$(DOCKER_COMP) exec --env=test php bin/phpunit $(c)
 
 
 ## —— Composer 🧙 ——————————————————————————————————————————————————————————————
@@ -75,15 +72,24 @@ entity: ## Create a new entity
 ## —— Database 🗂️️ —————————————————————————————————————————————————————————————
 database: ## Create the local dev database
 		@make database-create
-		@make database-migrations-execute
-		@make fixtures-load
+		## @make migrations-execute
+		## @make fixtures-load
+
+database-test: ## Create the test database
+		@make database-create-test
+		#@make database-migrations-execute-test
+		#@make database-fixtures-test
 
 database-create: ## Create the local dev database
 		$(SYMFONY) doctrine:database:drop --if-exists --force
 		$(SYMFONY) doctrine:database:create
 
+database-create-test: ## Creates the test database
+		$(SYMFONY) --env=test doctrine:database:drop --if-exists --force
+		$(SYMFONY) --env=test doctrine:database:create
+
 fixtures-load: ## Load fixtures
-		$(SYMFONY) doctrine:fixtures:load -n --group=dev -e dev
+		$(SYMFONY) doctrine:fixtures:load -n --group=dev
 
 migrations-generate: ## Generate doctrine migrations
 		$(SYMFONY) doctrine:migrations:generate
@@ -93,6 +99,13 @@ migrations-execute: ## Execute doctrine migrations
 
 migrations-status: ## View migration status
 		$(SYMFONY) doctrine:migrations:status
+
+database-fixtures-test: ## Runs the test fixtures
+	@docker-compose exec --env=test  php bin/console doctrine:fixtures:load -n --group=test
+
+database-migrations-execute-test: ## Runs the current set of migrations against the DB
+	@docker-compose exec --env=test  php bin/console doctrine:migrations:migrate --no-interaction
+
 
 ## —— Utils 🔌 ————————————————————————————————————————————————————————————————————————
 trust-tls: ## Trust the TLS certificates

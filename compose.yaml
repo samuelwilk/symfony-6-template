@@ -8,13 +8,9 @@ services:
       MERCURE_SUBSCRIBER_JWT_KEY: ${CADDY_MERCURE_JWT_SECRET:-!ChangeThisMercureHubJWTSecretKey!}
       TRUSTED_PROXIES: ${TRUSTED_PROXIES:-127.0.0.0/8,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16}
       TRUSTED_HOSTS: ${TRUSTED_HOSTS:-^${SERVER_NAME:-example\.com|localhost}|php$$}
-      DATABASE_URL: ${DATABASE_URL:-}
       MERCURE_URL: ${CADDY_MERCURE_URL:-http://php/.well-known/mercure}
       MERCURE_PUBLIC_URL: ${CADDY_MERCURE_PUBLIC_URL:-https://${SERVER_NAME:-localhost}/.well-known/mercure}
       MERCURE_JWT_SECRET: ${CADDY_MERCURE_JWT_SECRET:-!ChangeThisMercureHubJWTSecretKey!}
-      # The two next lines can be removed after initial installation
-      SYMFONY_VERSION: ${SYMFONY_VERSION:-}
-      STABILITY: ${STABILITY:-stable}
     volumes:
       - caddy_data:/data
       - caddy_config:/config
@@ -53,11 +49,12 @@ services:
       #POSTGRES_DB: ${DB_NAME:-app}
       #POSTGRES_USER: ${DB_USER:-app}
       #POSTGRES_PASSWORD: ${DB_PASSWORD:-!ChangeMe!}
-      # --- Uncomment for MySQL or MariaDB ---
+      # --- Uncomment for MySQL ---
+#      DATABASE_URL: ${DATABASE_URL}
       MYSQL_DATABASE: ${DB_NAME:-app}
-      MYSQL_RANDOM_ROOT_PASSWORD: "true"
-      MYSQL_USER: ${DB_USER:-app}
       MYSQL_PASSWORD: ${DB_PASSWORD:-!ChangeMe!}
+      MYSQL_USER: ${DB_USER:-app}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-!ChangeMe!}
       # --- Uncomment for MS SQL Server ---
       #ACCEPT_EULA: "Y"
       #MSSQL_SA_PASSWORD: ${DB_PASSWORD:-!ChangeMe!}
@@ -66,22 +63,9 @@ services:
       #- database_data:/var/lib/postgresql/data:rw
       # --- Uncomment for MySQL or MariaDB---
       - database_data:/var/lib/mysql:rw
-      # --- Uncomment for MS SQL Server ---
-      #- database_data:/var/opt/mssql:rw
-      # You may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
-      # --- Uncomment for PostgreSQL ---
-      # - ./docker/db/data:/var/lib/postgresql/data:rw
-      # --- Uncomment for MySQL ---
-      #- ./docker/db/data:/var/lib/mysql:rw
-###< doctrine/doctrine-bundle ###
-
 volumes:
   caddy_data:
   caddy_config:
-
-###> symfony/mercure-bundle ###
-###< symfony/mercure-bundle ###
-
-###> doctrine/doctrine-bundle ###
   database_data:
+
 ###< doctrine/doctrine-bundle ###

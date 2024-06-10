@@ -1,6 +1,7 @@
 #syntax=docker/dockerfile:1.4
 
 ARG PHP_VERSION
+ARG APP_ENV
 
 # Versions
 FROM dunglas/frankenphp:1-php${PHP_VERSION} AS frankenphp_upstream
