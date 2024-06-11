@@ -41,7 +41,9 @@ data "aws_caller_identity" "current" {}
 
 data "aws_ecr_authorization_token" "token" {}
 
-provider "aws" {}
+provider "aws" {
+    region = "us-west-2"
+}
 
 provider "docker" {
     registry_auth {
