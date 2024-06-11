@@ -1,7 +1,7 @@
 provider "aws" {
   region = "us-west-2"
 }
-#
+
 # resource "aws_instance" "app_server" {
 #   ami           = "ami-08d70e59c07c61a3a"
 #   instance_type = "t2.micro"
@@ -56,6 +56,8 @@ module "terraform_state_s3_bucket" {
   version = "~> 3.0"
 
   bucket = "tf-state-${var.github_repo}-${data.aws_caller_identity.current.account_id}"
+
+  force_destroy = true
 
   attach_deny_insecure_transport_policy = true
   attach_require_latest_tls_policy      = true
