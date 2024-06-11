@@ -15,6 +15,12 @@ jobs:
         steps:
             - name: Checkout
               uses: actions/checkout@v3
+              
+            - name: Source Symfony Env
+              working-directory: ./
+              run: |
+                  source .env
+                  echo "PHP_VERSION=${PHP_VERSION}" >> $GITHUB_ENV
 
             - name: Source Configuration
               working-directory: ./.github/workflows
@@ -34,7 +40,7 @@ jobs:
                   role-to-assume: ${{ env.AWS_ROLE }}
 
             - name: Install Terraform CLI
-              uses: hashicorp/setup-terraform@v2
+              uses: hashicorp/setup-terraform@v3
               with:
                   terraform_version: 1.2.9
                   terraform_wrapper: false
