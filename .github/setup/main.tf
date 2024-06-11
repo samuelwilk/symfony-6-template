@@ -53,7 +53,7 @@ data "aws_iam_policy_document" "github_actions_assume_role" {
 # s3 bucket for terraform state
 module "terraform_state_s3_bucket" {
   source  = "terraform-aws-modules/s3-bucket/aws"
-  version = "~> 3.0"
+  version = "~> 4.0"
 
   bucket = "tf-state-${var.github_repo}-${data.aws_caller_identity.current.account_id}"
 
