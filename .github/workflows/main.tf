@@ -35,7 +35,6 @@ provider "docker" {
         username = data.aws_ecr_authorization_token.token.user_name
         password = data.aws_ecr_authorization_token.token.password
     }
-    host = "unix:///var/run/docker.sock"
 }
 
 module "docker_image" {
