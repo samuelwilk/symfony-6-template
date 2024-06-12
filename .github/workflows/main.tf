@@ -73,7 +73,7 @@ resource "docker_container" "database" {
     external = 33450
   }
 
-  environment = {
+  environment {
     MYSQL_DATABASE      = var.db_name
     MYSQL_PASSWORD      = var.db_password
     MYSQL_USER          = var.db_user
