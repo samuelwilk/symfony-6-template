@@ -81,7 +81,7 @@ resource "docker_container" "database" {
     ]
 
   volumes {
-    volume_name    = resource.docker_volume.database_data.name
+    volume_name    = resource.docker_volume.name
     container_path = "/var/lib/mysql"
   }
 }
