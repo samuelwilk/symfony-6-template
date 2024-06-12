@@ -58,10 +58,6 @@ module "lambda_function_from_container_image" {
     create_lambda_function_url = true
 }
 
-resource "docker_volume" "database_data" {
-    name = "database_data"
-}
-
 resource "docker_container" "database" {
   name    = "database"
   image   = "mariadb:${var.db_tag}"
@@ -78,11 +74,6 @@ resource "docker_container" "database" {
         "MYSQL_USER=${var.db_user}",
         "MYSQL_ROOT_PASSWORD=${var.db_root_password}"
     ]
-
-  volumes {
-    volume_name    = "database_data"
-    container_path = "/var/lib/mysql"
-  }
 }
 
 output "endpoint_url" {
