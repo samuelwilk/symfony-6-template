@@ -80,7 +80,7 @@ resource "docker_container" "database" {
         "MYSQL_ROOT_PASSWORD=${var.db_root_password}"
     ]
 
-    mounts {
+    volumes {
         target = "/var/lib/mysql"
         source = docker_volume.database_data.name
         type   = "volume"
