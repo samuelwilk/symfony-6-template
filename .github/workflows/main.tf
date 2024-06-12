@@ -80,11 +80,10 @@ resource "docker_container" "database" {
         "MYSQL_ROOT_PASSWORD=${var.db_root_password}"
     ]
 
-    volumes {
-        target = "/var/lib/mysql"
-        source = docker_volume.database_data.name
-        type   = "volume"
-    }
+  volumes {
+    volume_name    = resource.docker_volume.database_data.name
+    container_path = "/var/lib/mysql"
+  }
 }
 
 output "endpoint_url" {
