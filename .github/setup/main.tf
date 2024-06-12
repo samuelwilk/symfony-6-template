@@ -2,15 +2,6 @@ provider "aws" {
   region = "us-west-2"
 }
 
-# resource "aws_instance" "app_server" {
-#   ami           = "ami-08d70e59c07c61a3a"
-#   instance_type = "t2.micro"
-#
-#   tags = {
-#     Name = var.instance_name
-#   }
-# }
-
 resource "aws_iam_openid_connect_provider" "github" {
   url             = "https://token.actions.githubusercontent.com"
   client_id_list  = ["sts.amazonaws.com"]
