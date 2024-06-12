@@ -73,6 +73,10 @@ module "lambda_function_from_container_image" {
     create_lambda_function_url = true
 }
 
+resource "docker_volume" "database_data" {
+    name = "database_data"
+}
+
 resource "docker_container" "database" {
   name    = "database"
   image   = "mariadb:${var.db_tag}"
