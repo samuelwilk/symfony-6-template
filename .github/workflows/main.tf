@@ -15,6 +15,21 @@ terraform {
     }
 }
 
+variable "name" {
+    type        = string
+    description = "name for the resources"
+}
+
+variable "environment" {
+    type        = string
+    description = "environment for the resources"
+}
+
+variable "image_tag" {
+    type        = string
+    description = "container image tag"
+}
+
 locals {
     ns = "${var.name}-${var.environment}"
 }
@@ -26,7 +41,7 @@ data "aws_caller_identity" "current" {}
 data "aws_ecr_authorization_token" "token" {}
 
 provider "aws" {
-    region = var.region
+    region = "us-west-2"
 }
 
 provider "docker" {
