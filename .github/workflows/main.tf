@@ -15,6 +15,9 @@ terraform {
     }
 }
 
+provider "docker" {
+  host = "unix:///var/run/docker.sock"
+}
 
 locals {
     ns = "${var.name}-${var.environment}"
