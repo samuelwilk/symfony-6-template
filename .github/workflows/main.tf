@@ -73,12 +73,12 @@ resource "docker_container" "database" {
     external = 33450
   }
 
-  environment {
-    MYSQL_DATABASE      = var.db_name
-    MYSQL_PASSWORD      = var.db_password
-    MYSQL_USER          = var.db_user
-    MYSQL_ROOT_PASSWORD = var.db_root_password
-  }
+    env = [
+        "MYSQL_DATABASE=${var.db_name}",
+        "MYSQL_PASSWORD=${var.db_password}",
+        "MYSQL_USER=${var.db_user}",
+        "MYSQL_ROOT_PASSWORD=${var.db_root_password}"
+    ]
 
   volumes {
     volume_name    = docker_volume.database_data.name
