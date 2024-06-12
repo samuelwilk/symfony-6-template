@@ -71,7 +71,7 @@ jobs:
                     -var="db_user=${DB_USER}" \
                     -var="db_password=${DB_PASSWORD}" \
                     -var="db_root_password=${DB_ROOT_PASSWORD}" \
-                    -var="db_port=${DB_PORT}" \
+                    -var="db_port=${DB_PORT}"
                   echo "Url=$(terraform output -json | jq '.endpoint_url.value' -r)" >> $GITHUB_OUTPUT
 
             - name: Add HTTPS endpoint to PR comment
