@@ -19,10 +19,9 @@ variable "region" {
     default     = "us-west-2"
 }
 
-variable "db_tag" {
+variable "db_host" {
     type        = string
-    description = "database image tag"
-    default     = "latest"
+    description = "database host"
 }
 
 variable "db_name" {
