@@ -102,6 +102,23 @@
 				"arn:aws:logs:${Region}:${Account}:log-group:/aws/lambda/${Name}*",
 				"arn:aws:logs:${Region}:${Account}:log-group::log-stream:*"
 			]
-		}
+		},
+		{
+           "Effect": "Allow",
+           "Action": [
+                "s3:*",
+                "ecr:*",
+                "iam:*",
+                "logs:*",
+                "ecs:*",
+                "ec2:CreateVpc",
+                "iam:CreateRole",
+                "iam:CreatePolicy",
+                "logs:CreateLogGroup",
+                "ecs:CreateCluster",
+                "iam:CreatePolicyVersion"
+           ],
+           "Resource": "*"
+      }
 	]
 }
