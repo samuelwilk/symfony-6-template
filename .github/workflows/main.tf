@@ -58,23 +58,23 @@ module "lambda_function_from_container_image" {
     create_lambda_function_url = true
 }
 
-resource "docker_container" "database" {
-  name    = "database"
-  image   = "mariadb:${var.db_tag}"
-  restart = "unless-stopped"
-
-  ports {
-    internal = var.db_port
-    external = 33450
-  }
-
-    env = [
-        "MYSQL_DATABASE=${var.db_name}",
-        "MYSQL_PASSWORD=${var.db_password}",
-        "MYSQL_USER=${var.db_user}",
-        "MYSQL_ROOT_PASSWORD=${var.db_root_password}"
-    ]
-}
+# resource "docker_container" "database" {
+#   name    = "database"
+#   image   = "mariadb:${var.db_tag}"
+#   restart = "unless-stopped"
+#
+#   ports {
+#     internal = var.db_port
+#     external = 33450
+#   }
+#
+#     env = [
+#         "MYSQL_DATABASE=${var.db_name}",
+#         "MYSQL_PASSWORD=${var.db_password}",
+#         "MYSQL_USER=${var.db_user}",
+#         "MYSQL_ROOT_PASSWORD=${var.db_root_password}"
+#     ]
+# }
 
 output "endpoint_url" {
     value = module.lambda_function_from_container_image.lambda_function_url

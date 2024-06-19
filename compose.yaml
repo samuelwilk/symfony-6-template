@@ -63,6 +63,10 @@ services:
       #- database_data:/var/lib/postgresql/data:rw
       # --- Uncomment for MySQL or MariaDB---
       - database_data:/var/lib/mysql:rw
+#  node:
+#    image: node:${NODE_TAG:lts-iron}
+#    command: ["sh", "-c", "npm install -g serverless@3"]
+    
 volumes:
   caddy_data:
   caddy_config:

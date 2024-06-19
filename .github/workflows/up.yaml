@@ -30,7 +30,7 @@ jobs:
                   echo "AWS_REGION=${AWS_REGION}" >> $GITHUB_ENV
                   echo "AWS_ROLE=${AWS_ROLE}" >> $GITHUB_ENV
                   echo "TF_BACKEND_S3_BUCKET=${TF_BACKEND_S3_BUCKET}" >> $GITHUB_ENV
-                  echo "DB_TAG=${DB_TAG}" >> $GITHUB_ENV
+                  echo "DB_HOST=${DB_HOST}" >> $GITHUB_ENV
                   echo "DB_NAME=${DB_NAME}" >> $GITHUB_ENV
                   echo "DB_USER=${DB_USER}" >> $GITHUB_ENV
                   echo "DB_PASSWORD=${DB_PASSWORD}" >> $GITHUB_ENV
@@ -66,7 +66,7 @@ jobs:
                     -var="name=${{ github.event.repository.name }}" \
                     -var="environment=${ENVIRONMENT}" \
                     -var="image_tag=${GITHUB_SHA}" \
-                    -var="db_tag=${DB_TAG}" \
+                    -var="db_host=${DB_HOST}" \
                     -var="db_name=${DB_NAME}" \
                     -var="db_user=${DB_USER}" \
                     -var="db_password=${DB_PASSWORD}" \
