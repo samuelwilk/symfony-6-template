@@ -44,7 +44,8 @@
 				"iam:DeletePolicy",
 				"iam:GetPolicy",
 				"iam:GetPolicyVersion",
-				"iam:ListPolicyVersions"
+				"iam:ListPolicyVersions",
+				"iam:CreatePolicyVersion"
 			],
 			"Resource": "arn:aws:iam::${Account}:policy/${Name}*"
 		},
@@ -103,21 +104,17 @@
 				"arn:aws:logs:${Region}:${Account}:log-group::log-stream:*"
 			]
 		},
-      {
-        "Effect": "Allow",
-        "Action": [
-            "ec2:CreateInternetGateway"
-        ],
-        "Resource":"arn:aws:${Region}:${Account}:internet-gateway/*"
-      },
-
-        "Effect": "Allow",
-        "Action": [
-            "ec2:CreateSubnet",
-            "ec2:CreateSecurityGroup",
-            "ec2:CreateNetworkAcl"
-        ],
-        "Resource":"arn:aws:${Region}:${Account}:vpc/*"
-      }
+        {
+            "Effect": "Allow",
+            "Action": [
+                "ecs:*",
+                "ec2:CreateVpc",
+                "ec2:DescribeVpcs",
+                "ec2:DescribeVpcAttribute",
+                "logs:CreateLogGroup",
+                "ecs:CreateCluster"
+            ],
+            "Resource": "*"
+        }
 	]
 }
