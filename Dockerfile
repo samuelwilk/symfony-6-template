@@ -1,3 +1,5 @@
+#syntax=docker/dockerfile:1.4
+
 ARG PHP_VERSION=8.2
 
 # Versions
