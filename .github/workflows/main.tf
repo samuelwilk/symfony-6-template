@@ -123,58 +123,7 @@ resource "aws_network_acl" "main" {
     }
 }
 
-// Create an IAM role for ECS tasks
-resource "aws_iam_role" "ecs_exec_role" {
-    name = "ecs_exec_role" // Name of the IAM role
-
-    assume_role_policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Action": "sts:AssumeRole",
-      "Principal": {
-        "Service": "ecs-tasks.amazonaws.com"
-      },
-      "Effect": "Allow",
-      "Sid": ""
-    }
-  ]
-}
-EOF
-}
-
-resource "aws_iam_policy" "ecs_logs" {
-    name        = "ecs_logs"
-    description = "Allow ECS tasks to create and write to CloudWatch log streams"
-
-    policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": [
-        "logs:CreateLogStream",
-        "logs:PutLogEvents"
-      ],
-      "Resource": "arn:aws:logs:*:*:*"
-    },
-    {
-      "Effect": "Allow",
-      "Action": "ec2:CreateNetworkInterface",
-      "Resource": "*"
-    }
-  ]
-}
-EOF
-}
-
-resource "aws_iam_role_policy_attachment" "ecs_logs" {
-    role       = aws_iam_role.ecs_exec_role.name
-    policy_arn = aws_iam_policy.ecs_logs.arn
-}
-
+// TODO: attempt to move these policies into setup/main.tf or setup/policy.tmpl
 // Create a CloudWatch log group
 resource "aws_cloudwatch_log_group" "ecs" {
     name = "ecs" // Name of the log group
@@ -231,7 +180,7 @@ resource "aws_ecs_task_definition" "mariadb" {
     requires_compatibilities = ["FARGATE"]                    // Launch types required by the task
     cpu                      = "256"                          // Amount of CPU used by the task
     memory                   = "512"                          // Amount of memory used by the task
-    execution_role_arn       = aws_iam_role.ecs_exec_role.arn // ARN of the IAM role used by the task
+    execution_role_arn       = data.aws_caller_identity.current.arn // ARN of the IAM role used by the task
 
     container_definitions = jsonencode([{
         name  = "mariadb",        // Name of the container
@@ -308,7 +257,7 @@ provider "docker" {
     registry_auth {
         address  = format("%v.dkr.ecr.%v.amazonaws.com", data.aws_caller_identity.current.account_id, data.aws_region.current.name)
         username = data.aws_ecr_authorization_token.token.user_name
-        password = data.aws_ecr_authorization_token.token.password
+        password = data.aws_caller_identity.current.account_id
     }
 }
 
