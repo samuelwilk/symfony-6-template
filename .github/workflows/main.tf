@@ -124,11 +124,6 @@ resource "aws_network_acl" "main" {
 }
 
 // TODO: attempt to move these policies into setup/main.tf or setup/policy.tmpl
-// Create a CloudWatch log group
-resource "aws_cloudwatch_log_group" "ecs" {
-    name = "ecs" // Name of the log group
-}
-
 // Create an ECS cluster
 resource "aws_ecs_cluster" "main" {
     name = "main" // Name of the ECS cluster
@@ -213,14 +208,15 @@ resource "aws_ecs_task_definition" "mariadb" {
             }
         ],
         essential = true, // Whether the container is essential
-        logConfiguration = {
-            logDriver = "awslogs", // Log driver for the container
-            options = {
-                "awslogs-group"         = aws_cloudwatch_log_group.ecs.name, // CloudWatch log group for the container logs
-                "awslogs-region"        = var.region,                    // AWS region for the CloudWatch log group
-                "awslogs-stream-prefix" = "mariadb"                          // Prefix for the log streams
-            }
-        }
+#         logConfiguration = {
+#             logDriver = "awslogs", // Log driver for the container
+#             options = {
+#                 // TODO: fix
+#                 "awslogs-group"         = aws_cloudwatch_log_group.ecs.name, // CloudWatch log group for the container logs
+#                 "awslogs-region"        = var.region,                    // AWS region for the CloudWatch log group
+#                 "awslogs-stream-prefix" = "mariadb"                          // Prefix for the log streams
+#             }
+#         }
     }])
 }
 
