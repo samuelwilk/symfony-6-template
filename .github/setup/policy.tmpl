@@ -100,6 +100,7 @@
 			],
 			"Resource": [
 				"arn:aws:logs:${Region}:${Account}:log-group:${Name}*",
+				"arn:aws:logs:${Region}:${Account}:log-group:ecs",
 				"arn:aws:logs:${Region}:${Account}:log-group:/aws/lambda/${Name}*",
 				"arn:aws:logs:${Region}:${Account}:log-group::log-stream:*"
 			]
@@ -110,7 +111,11 @@
                 "ecs:*",
                 "ec2:CreateVpc",
                 "ec2:DescribeVpcs",
+                "ec2:CreateInternetGateway",
+                "ec2:CreateSubnet",
                 "ec2:DescribeVpcAttribute",
+                "ec2:CreateSecurityGroup",
+                "ec2:CreateNetworkAcl",
                 "logs:CreateLogGroup",
                 "ecs:CreateCluster"
             ],
