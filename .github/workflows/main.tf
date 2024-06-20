@@ -175,7 +175,7 @@ resource "aws_ecs_task_definition" "mariadb" {
     requires_compatibilities = ["FARGATE"]                    // Launch types required by the task
     cpu                      = "256"                          // Amount of CPU used by the task
     memory                   = "512"                          // Amount of memory used by the task
-    execution_role_arn       = data.aws_caller_identity.current.arn // ARN of the IAM role used by the task
+    execution_role_arn       = var.aws_role // ARN of the IAM role used by the task
 
     container_definitions = jsonencode([{
         name  = "mariadb",        // Name of the container

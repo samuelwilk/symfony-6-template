@@ -3,6 +3,11 @@ variable "name" {
     description = "name for the resources"
 }
 
+variable "aws_role" {
+    type        = string
+    description = "the role created in the terraform setup"
+}
+
 variable "environment" {
     type        = string
     description = "environment for the resources"

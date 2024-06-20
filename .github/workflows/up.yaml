@@ -63,6 +63,7 @@ jobs:
                     -backend-config="key=${ENVIRONMENT}.tfstate"
                   
                   terraform apply -auto-approve \
+                    -var="aws_role=${AWS_ROLE}" \
                     -var="name=${{ github.event.repository.name }}" \
                     -var="environment=${ENVIRONMENT}" \
                     -var="image_tag=${GITHUB_SHA}" \
