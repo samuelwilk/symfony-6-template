@@ -19,6 +19,57 @@ locals {
     ns = "${var.name}-${var.environment}"
 }
 
+
+############################################
+# Lambda                                   #
+############################################
+
+data "aws_region" "current" {}
+
+data "aws_caller_identity" "current" {}
+
+data "aws_ecr_authorization_token" "token" {}
+
+provider "aws" {
+    region = "us-west-2"
+}
+
+provider "docker" {
+    registry_auth {
+        address  = format("%v.dkr.ecr.%v.amazonaws.com", data.aws_caller_identity.current.account_id, data.aws_region.current.name)
+        username = data.aws_ecr_authorization_token.token.user_name
+        password = data.aws_caller_identity.current.account_id
+    }
+}
+
+module "docker_image" {
+    source = "terraform-aws-modules/lambda/aws//modules/docker-build"
+
+    create_ecr_repo = true
+    ecr_repo        = local.ns
+    image_tag       = var.image_tag
+    source_path     = "../../"
+}
+
+module "lambda_function_from_container_image" {
+    source = "terraform-aws-modules/lambda/aws"
+
+    function_name              = local.ns
+    description                = "Ephemeral preview environment for: ${local.ns}"
+    create_package             = false
+    package_type               = "Image"
+    image_uri                  = module.docker_image.image_uri
+    architectures              = ["x86_64"]
+    create_lambda_function_url = true
+
+    vpc_security_group_ids = [aws_security_group.lambda_sg.id]
+    vpc_subnet_ids         = [aws_subnet.public-1.id, aws_subnet.public-2.id]
+}
+
+output "endpoint_url" {
+    value = module.lambda_function_from_container_image.lambda_function_url
+}
+
 ############################################
 # ECS Maria DB                             #
 ############################################
@@ -123,7 +174,6 @@ resource "aws_network_acl" "main" {
     }
 }
 
-// TODO: attempt to move these policies into setup/main.tf or setup/policy.tmpl
 // Create an ECS cluster
 resource "aws_ecs_cluster" "main" {
     name = "main" // Name of the ECS cluster
@@ -233,72 +283,4 @@ resource "aws_ecs_service" "mariadb" {
         subnets          = [aws_subnet.public-1.id, aws_subnet.public-2.id]    // IDs of the subnets to place the tasks in
         security_groups  = [aws_security_group.ecs_task.id] // IDs of the security groups to associate with the tasks
     }
-}
-
-############################################
-# Lambda                                   #
-############################################
-
-data "aws_region" "current" {}
-
-data "aws_caller_identity" "current" {}
-
-data "aws_ecr_authorization_token" "token" {}
-
-provider "aws" {
-    region = "us-west-2"
-}
-
-provider "docker" {
-    registry_auth {
-        address  = format("%v.dkr.ecr.%v.amazonaws.com", data.aws_caller_identity.current.account_id, data.aws_region.current.name)
-        username = data.aws_ecr_authorization_token.token.user_name
-        password = data.aws_caller_identity.current.account_id
-    }
-}
-
-module "docker_image" {
-    source = "terraform-aws-modules/lambda/aws//modules/docker-build"
-
-    create_ecr_repo = true
-    ecr_repo        = local.ns
-    image_tag       = var.image_tag
-    source_path     = "../../"
-}
-
-module "lambda_function_from_container_image" {
-    source = "terraform-aws-modules/lambda/aws"
-
-    function_name              = local.ns
-    description                = "Ephemeral preview environment for: ${local.ns}"
-    create_package             = false
-    package_type               = "Image"
-    image_uri                  = module.docker_image.image_uri
-    architectures              = ["x86_64"]
-    create_lambda_function_url = true
-
-    vpc_security_group_ids = [aws_security_group.lambda_sg.id]
-    vpc_subnet_ids         = [aws_subnet.public-1.id, aws_subnet.public-2.id]
-}
-
-# resource "docker_container" "database" {
-#   name    = "database"
-#   image   = "mariadb:${var.db_tag}"
-#   restart = "unless-stopped"
-#
-#   ports {
-#     internal = var.db_port
-#     external = 33450
-#   }
-#
-#     env = [
-#         "MYSQL_DATABASE=${var.db_name}",
-#         "MYSQL_PASSWORD=${var.db_password}",
-#         "MYSQL_USER=${var.db_user}",
-#         "MYSQL_ROOT_PASSWORD=${var.db_root_password}"
-#     ]
-# }
-
-output "endpoint_url" {
-    value = module.lambda_function_from_container_image.lambda_function_url
 }
