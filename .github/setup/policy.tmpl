@@ -103,24 +103,21 @@
 				"arn:aws:logs:${Region}:${Account}:log-group::log-stream:*"
 			]
 		},
-		{
-           "Effect": "Allow",
-           "Action": [
-                "s3:*",
-                "ecr:*",
-                "iam:*",
-                "logs:*",
-                "ecs:*",
-                "ec2:CreateVpc",
-                "ec2:DescribeVpcs",
-                "ec2:DescribeVpcAttribute",
-                "iam:CreateRole",
-                "iam:CreatePolicy",
-                "logs:CreateLogGroup",
-                "ecs:CreateCluster",
-                "iam:CreatePolicyVersion"
-           ],
-           "Resource": "*"
+      {
+        "Effect": "Allow",
+        "Action": [
+            "ec2:CreateInternetGateway"
+        ],
+        "Resource":"arn:aws:${Region}:${Account}:internet-gateway/*"
+      },
+
+        "Effect": "Allow",
+        "Action": [
+            "ec2:CreateSubnet",
+            "ec2:CreateSecurityGroup",
+            "ec2:CreateNetworkAcl"
+        ],
+        "Resource":"arn:aws:${Region}:${Account}:vpc/*"
       }
 	]
 }
