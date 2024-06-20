@@ -1,0 +1,88 @@
+on:
+    pull_request:
+        branches: [main]
+        types: [opened, reopened, synchronize, edited]
+
+jobs:
+    up:
+        name: Deploy PR to ephemeral environment
+        runs-on: ubuntu-latest
+        permissions:
+            id-token: write
+            contents: read
+            pull-requests: write
+        
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v3
+              
+            - name: Source Symfony Env
+              working-directory: ./
+              run: |
+                  source .env
+                  echo "PHP_VERSION=${PHP_VERSION}" >> $GITHUB_ENV
+
+            - name: Source Configuration
+              working-directory: ./.github/workflows
+              run: |
+                  # make input envvars available to all steps
+                  source config.env
+                  echo "AWS_REGION=${AWS_REGION}" >> $GITHUB_ENV
+                  echo "AWS_ROLE=${AWS_ROLE}" >> $GITHUB_ENV
+                  echo "TF_BACKEND_S3_BUCKET=${TF_BACKEND_S3_BUCKET}" >> $GITHUB_ENV
+                  echo "DB_HOST=${DB_HOST}" >> $GITHUB_ENV
+                  echo "DB_NAME=${DB_NAME}" >> $GITHUB_ENV
+                  echo "DB_USER=${DB_USER}" >> $GITHUB_ENV
+                  echo "DB_PASSWORD=${DB_PASSWORD}" >> $GITHUB_ENV
+                  echo "DB_ROOT_PASSWORD=${DB_ROOT_PASSWORD}" >> $GITHUB_ENV
+                  echo "DB_PORT=${DB_PORT}" >> $GITHUB_ENV
+                  environment=${GITHUB_HEAD_REF##*/}
+                  echo "ENVIRONMENT=${environment}" >> $GITHUB_ENV
+
+            - name: Assume AWS IAM Role
+              uses: aws-actions/configure-aws-credentials@v4
+              with:
+                  aws-region: ${{ env.AWS_REGION }}
+                  role-to-assume: ${{ env.AWS_ROLE }}
+
+            - name: Install Terraform CLI
+              uses: hashicorp/setup-terraform@v3
+              with:
+                  terraform_version: 1.2.9
+                  terraform_wrapper: false
+
+            - name: Lambda-ify
+              run: echo "COPY --from=public.ecr.aws/awsguru/aws-lambda-adapter:0.8.3 /lambda-adapter /opt/extensions/lambda-adapter" >> Dockerfile
+
+            - name: Deploy to ephemeral environment
+              id: furl
+              working-directory: ./.github/workflows
+              run: |
+                  terraform init \
+                    -backend-config="bucket=${TF_BACKEND_S3_BUCKET}" \
+                    -backend-config="key=${ENVIRONMENT}.tfstate"
+                  
+                  terraform apply -auto-approve \
+                    -var="aws_role=${AWS_ROLE}" \
+                    -var="name=${{ github.event.repository.name }}" \
+                    -var="environment=${ENVIRONMENT}" \
+                    -var="image_tag=${GITHUB_SHA}" \
+                    -var="db_host=${DB_HOST}" \
+                    -var="db_name=${DB_NAME}" \
+                    -var="db_user=${DB_USER}" \
+                    -var="db_password=${DB_PASSWORD}" \
+                    -var="db_root_password=${DB_ROOT_PASSWORD}" \
+                    -var="db_port=${DB_PORT}"
+                  echo "Url=$(terraform output -json | jq '.endpoint_url.value' -r)" >> $GITHUB_OUTPUT
+
+            - name: Add HTTPS endpoint to PR comment
+              uses: mshick/add-pr-comment@v1
+              with:
+                  message: |
+                      :rocket: Code successfully deployed to a new ephemeral containerized PR environment!
+                      
+                      ${{ steps.furl.outputs.Url }}
+                  
+                  repo-token: ${{ secrets.GITHUB_TOKEN }}
+                  repo-token-user-login: "github-actions[bot]"
+                  allow-repeats: true

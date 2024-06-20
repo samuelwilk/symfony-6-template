@@ -152,4 +152,6 @@ package.tar
 ### DOCKER ###
 /database/*
 
+# ignore the ecsTest directory
+/ecsTest/
 

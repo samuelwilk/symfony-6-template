@@ -19,7 +19,7 @@ class smokeTest extends WebTestCase
         $client->request('GET', '/');
 
         // Validate a successful response and some content
-        $this->assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
-        $this->assertSelectorTextContains('h1', 'Welcome to Symfony');
+        $this->assertResponseStatusCodeSame(Response::HTTP_OK);
+        $this->assertSelectorTextContains('body', 'Lucky number');
     }
 }
